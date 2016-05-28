@@ -1,0 +1,37 @@
+
+struct VsIn
+{
+	float4 Position : Position;
+};
+
+struct PsIn
+{
+	float4 Position : SV_Position;
+	float3 TexCoord : TexCoord;
+};
+
+[Vertex shader]
+
+float4x4 ViewProj;
+float4x4 Rotation;
+float3 CamPos;
+
+PsIn main(VsIn In)
+{
+	PsIn Out;
+
+	Out.Position = mul(ViewProj, In.Position);
+	Out.TexCoord = mul((float3x3) Rotation, In.Position - CamPos);
+
+	return Out;
+}
+
+[Fragment shader]
+
+TextureCube Sky;
+SamplerState Filter;
+
+float4 main(PsIn In) : SV_Target
+{
+	return Sky.Sample(Filter, In.TexCoord);
+}

@@ -1,0 +1,184 @@
+
+struct VsIn
+{
+	float4 Position : Position;
+	float2 TexCoord : TexCoord;
+	float3 Tangent  : Tangent;
+	float3 Binormal : Binormal;
+	float3 Normal   : Normal;
+};
+
+struct GsIn
+{
+	float4 Position : SV_Position;
+	float2 TexCoord : TexCoord;
+	float3 Tangent  : Tangent;
+	float3 Binormal : Binormal;
+	float3 Normal   : Normal;
+};
+
+struct PsIn
+{
+	float4 Position : SV_Position;
+	float2 TexCoord : TexCoord;
+	float3 Tangent  : Tangent;
+	float3 Binormal : Binormal;
+	float3 Normal   : Normal;
+
+	noperspective float4 Dist : Dist;
+};
+
+[Vertex shader]
+
+float4x4 ViewProj;
+
+GsIn main(VsIn In)
+{
+	GsIn Out;
+
+	Out.Position = mul(ViewProj, In.Position);
+	Out.TexCoord = In.TexCoord;
+	// Pass tangent space
+	Out.Tangent  = In.Tangent;
+	Out.Binormal = In.Binormal;
+	Out.Normal   = In.Normal;
+
+	return Out;
+}
+
+
+[Geometry shader]
+
+float4 ScaleBias;
+
+float ComputeDist(const float2 pos0, const float2 pos1, const float2 pos2, out uint major_dir)
+{
+	float2 dir = normalize(pos1 - pos0);
+	float2 normal = float2(-dir.y, dir.x);
+	float dist = dot(pos0, normal) - dot(pos2, normal);
+
+	// Check major direction
+	bool x_gt_y = (abs(normal.x) > abs(normal.y));
+
+	major_dir = x_gt_y;
+	return dist / (x_gt_y? normal.x : normal.y);
+}
+
+PsIn MakeVertex(const GsIn In, const float4 Dist)
+{
+	PsIn Out;
+	Out.Position = In.Position;
+	Out.TexCoord = In.TexCoord;
+	Out.Tangent  = In.Tangent;
+	Out.Binormal = In.Binormal;
+	Out.Normal   = In.Normal;
+	Out.Dist     = Dist;
+	
+	return Out;
+}
+
+[maxvertexcount(3)]
+void main(in triangle GsIn In[3], inout TriangleStream<PsIn> Stream)
+{
+	float2 pos0 = (In[0].Position.xy / In[0].Position.w) * ScaleBias.xy + ScaleBias.zw;
+	float2 pos1 = (In[1].Position.xy / In[1].Position.w) * ScaleBias.xy + ScaleBias.zw;
+	float2 pos2 = (In[2].Position.xy / In[2].Position.w) * ScaleBias.xy + ScaleBias.zw;
+
+	uint3 major_dirs;
+	float dist0 = ComputeDist(pos0, pos1, pos2, major_dirs.x);
+	float dist1 = ComputeDist(pos1, pos2, pos0, major_dirs.y);
+	float dist2 = ComputeDist(pos2, pos0, pos1, major_dirs.z);
+
+	// Pass flags in last component. Add 1.0f (0x3F800000) and put something in LSB bits to give the interpolator some slack for precision.
+	float major_dir = asfloat((major_dirs.x << 4) | (major_dirs.y << 5) | (major_dirs.z << 6) | 0x3F800008);
+
+	Stream.Append( MakeVertex(In[0], float4(0, dist1, 0, major_dir)) );
+	Stream.Append( MakeVertex(In[1], float4(0, 0, dist2, major_dir)) );
+	Stream.Append( MakeVertex(In[2], float4(dist0, 0, 0, major_dir)) );
+}
+
+
+
+[Fragment shader]
+
+struct PsOut
+{
+	float4 Base   : SV_Target0;
+	float3 Normal : SV_Target1;
+	float2 Dist   : SV_Target2;
+};
+
+Texture2D Base;
+Texture2D Bump;
+SamplerState Filter;
+
+PsOut main(PsIn In)
+{
+	PsOut Out;
+
+	float4 base = Base.Sample(Filter, In.TexCoord);
+	float3 bump = Bump.Sample(Filter, In.TexCoord).xyz;
+
+	// Compute world-space normal
+	float3 normal = In.Tangent * bump.x + In.Binormal * bump.y + In.Normal * bump.z;
+	normal = normalize(normal);
+
+	// Fill the buffers
+	Out.Base = base;
+	Out.Normal = normal;
+
+
+	// Select the smallest distance
+	float dist = In.Dist.x;
+	int major_dir = asuint(In.Dist.w) & (1 << 4);
+
+	if (abs(In.Dist.y) < abs(dist))
+	{
+		dist = In.Dist.y;
+		major_dir = asuint(In.Dist.w) & (1 << 5);
+	}
+	if (abs(In.Dist.z) < abs(dist))
+	{
+		dist = In.Dist.z;
+		major_dir = asuint(In.Dist.w) & (1 << 6);
+	}
+
+
+	float2 offset = 0.5f;
+
+	// Select direction to sample a neighbor pixel
+	if (major_dir)
+		offset.x = dist;
+	else
+		offset.y = dist;
+
+	Out.Dist = offset;
+
+
+#ifdef ALPHA_TEST
+	// Do the alpha-test
+	const float alpha_ref = 127.0f / 255.0f;
+	const float alpha = base.a - alpha_ref;
+
+	clip(alpha);
+
+	// Select direction that will quickest fall below alpha_ref, i.e. which has greatest slope.
+	float dx = ddx(alpha);
+	float dy = ddy(alpha);
+	bool major_alpha_dir = abs(dx) > abs(dy);
+
+	// Compute signed distance to where alpha reaches zero
+	float alpha_dist = -alpha / (major_alpha_dir? dx : dy);
+
+	// If alpha distance is smaller than geometric distance, then use that instead.
+	if (abs(alpha_dist) < abs(dist))
+	{
+		if (major_alpha_dir)
+			Out.Dist = float2(alpha_dist, 0.5f);
+		else
+			Out.Dist = float2(0.5f, alpha_dist);
+	}
+#endif
+
+	return Out;
+}
