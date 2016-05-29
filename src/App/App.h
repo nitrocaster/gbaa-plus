@@ -60,7 +60,7 @@ protected:
 	TextureID m_BaseRT, m_NormalRT, m_DepthRT, m_GeometryRT, m_ResultRT;
 
 	SamplerStateID m_BaseFilter, m_PointClamp;
-	BlendStateID m_BlendAdd;
+	BlendStateID m_BlendAdd, m_NoBlend;
 	DepthStateID m_DepthTest;
 
 	Light m_Lights[LIGHT_COUNT];

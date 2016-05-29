@@ -206,6 +206,7 @@ bool App::load()
 
 	// Blendstates
 	if ((m_BlendAdd = renderer->addBlendState(ONE, ONE)) == BS_NONE) return false;
+    if ((m_NoBlend = renderer->addBlendState(ONE, ZERO)) == BS_NONE) return false;
 
 	// Depth states - use reversed depth (1 to 0) to improve precision
 	if ((m_DepthTest = renderer->addDepthState(true, true, GEQUAL)) == DS_NONE) return false;
