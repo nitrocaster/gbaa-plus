@@ -944,6 +944,21 @@ bool Direct3D10Renderer::generateMipMaps(const TextureID renderTarget){
 	return true;
 }
 
+void Direct3D10Renderer::copyTexture(TextureID dst, TextureID src)
+{
+    ID3D10Resource *dstRes = nullptr;
+    ID3D10Resource *srcRes = nullptr;
+    if (dst == FB_COLOR || dst == FB_DEPTH)
+        backBufferRTV->GetResource(&dstRes);
+    else
+        dstRes = textures[dst].texture;
+    if (src == FB_COLOR || src == FB_DEPTH)
+        backBufferRTV->GetResource(&srcRes);
+    else
+        srcRes = textures[src].texture;
+    device->CopyResource(dstRes, srcRes);
+}
+
 void Direct3D10Renderer::removeTexture(const TextureID texture){
 	SAFE_RELEASE(textures[texture].texture);
 	SAFE_RELEASE(textures[texture].srv);

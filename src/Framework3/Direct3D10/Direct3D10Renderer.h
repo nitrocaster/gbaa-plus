@@ -63,8 +63,8 @@ public:
 
 	bool resizeRenderTarget(const TextureID renderTarget, const int width, const int height, const int depth, const int mipMapCount, const int arraySize);
 	bool generateMipMaps(const TextureID renderTarget);
-
-	void removeTexture(const TextureID texture);
+    void copyTexture(TextureID dst, TextureID src);
+    void removeTexture(const TextureID texture);
 
 	ShaderID addShader(const char *vsText, const char *gsText, const char *fsText, const int vsLine, const int gsLine, const int fsLine,
 		const char *header = NULL, const char *extra = NULL, const char *fileName = NULL, const char **attributeNames = NULL, const int nAttributes = 0, const uint flags = 0);
