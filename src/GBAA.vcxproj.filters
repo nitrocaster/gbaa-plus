@@ -196,5 +196,8 @@
     <None Include="..\Shaders\GBAA.shd">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\Shaders\Quad.shd">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

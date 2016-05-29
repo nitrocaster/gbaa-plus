@@ -167,6 +167,7 @@
     <None Include="..\Shaders\FillBuffers.shd" />
     <None Include="..\Shaders\GBAA.shd" />
     <None Include="..\Shaders\Lighting.shd" />
+    <None Include="..\Shaders\Quad.shd" />
     <None Include="..\Shaders\Skybox.shd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
