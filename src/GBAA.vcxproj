@@ -109,58 +109,58 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\Framework3\BaseApp.cpp" />
-    <ClCompile Include="..\Framework3\Config.cpp" />
-    <ClCompile Include="..\Framework3\CPU.cpp" />
-    <ClCompile Include="..\Framework3\Direct3D10\D3D10App.cpp" />
-    <ClCompile Include="..\Framework3\Direct3D10\Direct3D10Renderer.cpp" />
-    <ClCompile Include="..\Framework3\GUI\Button.cpp" />
-    <ClCompile Include="..\Framework3\GUI\CheckBox.cpp" />
-    <ClCompile Include="..\Framework3\GUI\Dialog.cpp" />
-    <ClCompile Include="..\Framework3\GUI\DropDownList.cpp" />
-    <ClCompile Include="..\Framework3\GUI\Label.cpp" />
-    <ClCompile Include="..\Framework3\GUI\Slider.cpp" />
-    <ClCompile Include="..\Framework3\GUI\Widget.cpp" />
-    <ClCompile Include="..\Framework3\Imaging\Image.cpp" />
-    <ClCompile Include="..\Framework3\Math\Noise.cpp" />
-    <ClCompile Include="..\Framework3\Math\Vector.cpp" />
-    <ClCompile Include="..\Framework3\Platform.cpp" />
-    <ClCompile Include="..\Framework3\Renderer.cpp" />
-    <ClCompile Include="..\Framework3\Util\BSP.cpp" />
-    <ClCompile Include="..\Framework3\Util\Model.cpp" />
-    <ClCompile Include="..\Framework3\Util\String.cpp" />
-    <ClCompile Include="..\Framework3\Util\TexturePacker.cpp" />
-    <ClCompile Include="..\Framework3\Util\Tokenizer.cpp" />
-    <ClCompile Include="..\Framework3\Windows\WindowsBase.cpp" />
-    <ClCompile Include="App.cpp" />
+    <ClCompile Include="Framework3\BaseApp.cpp" />
+    <ClCompile Include="Framework3\Config.cpp" />
+    <ClCompile Include="Framework3\CPU.cpp" />
+    <ClCompile Include="Framework3\Direct3D10\D3D10App.cpp" />
+    <ClCompile Include="Framework3\Direct3D10\Direct3D10Renderer.cpp" />
+    <ClCompile Include="Framework3\GUI\Button.cpp" />
+    <ClCompile Include="Framework3\GUI\CheckBox.cpp" />
+    <ClCompile Include="Framework3\GUI\Dialog.cpp" />
+    <ClCompile Include="Framework3\GUI\DropDownList.cpp" />
+    <ClCompile Include="Framework3\GUI\Label.cpp" />
+    <ClCompile Include="Framework3\GUI\Slider.cpp" />
+    <ClCompile Include="Framework3\GUI\Widget.cpp" />
+    <ClCompile Include="Framework3\Imaging\Image.cpp" />
+    <ClCompile Include="Framework3\Math\Noise.cpp" />
+    <ClCompile Include="Framework3\Math\Vector.cpp" />
+    <ClCompile Include="Framework3\Platform.cpp" />
+    <ClCompile Include="Framework3\Renderer.cpp" />
+    <ClCompile Include="Framework3\Util\BSP.cpp" />
+    <ClCompile Include="Framework3\Util\Model.cpp" />
+    <ClCompile Include="Framework3\Util\String.cpp" />
+    <ClCompile Include="Framework3\Util\TexturePacker.cpp" />
+    <ClCompile Include="Framework3\Util\Tokenizer.cpp" />
+    <ClCompile Include="Framework3\Windows\WindowsBase.cpp" />
+    <ClCompile Include="App\App.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Framework3\BaseApp.h" />
-    <ClInclude Include="..\Framework3\Config.h" />
-    <ClInclude Include="..\Framework3\CPU.h" />
-    <ClInclude Include="..\Framework3\Direct3D10\D3D10App.h" />
-    <ClInclude Include="..\Framework3\Direct3D10\Direct3D10Renderer.h" />
-    <ClInclude Include="..\Framework3\GUI\Button.h" />
-    <ClInclude Include="..\Framework3\GUI\CheckBox.h" />
-    <ClInclude Include="..\Framework3\GUI\Dialog.h" />
-    <ClInclude Include="..\Framework3\GUI\DropDownList.h" />
-    <ClInclude Include="..\Framework3\GUI\Label.h" />
-    <ClInclude Include="..\Framework3\GUI\Slider.h" />
-    <ClInclude Include="..\Framework3\GUI\Widget.h" />
-    <ClInclude Include="..\Framework3\Imaging\Image.h" />
-    <ClInclude Include="..\Framework3\Math\Noise.h" />
-    <ClInclude Include="..\Framework3\Math\Vector.h" />
-    <ClInclude Include="..\Framework3\Platform.h" />
-    <ClInclude Include="..\Framework3\Renderer.h" />
-    <ClInclude Include="..\Framework3\Util\BSP.h" />
-    <ClInclude Include="..\Framework3\Util\Model.h" />
-    <ClInclude Include="..\Framework3\Util\String.h" />
-    <ClInclude Include="..\Framework3\Util\TexturePacker.h" />
-    <ClInclude Include="..\Framework3\Util\Tokenizer.h" />
-    <ClInclude Include="App.h" />
+    <ClInclude Include="Framework3\BaseApp.h" />
+    <ClInclude Include="Framework3\Config.h" />
+    <ClInclude Include="Framework3\CPU.h" />
+    <ClInclude Include="Framework3\Direct3D10\D3D10App.h" />
+    <ClInclude Include="Framework3\Direct3D10\Direct3D10Renderer.h" />
+    <ClInclude Include="Framework3\GUI\Button.h" />
+    <ClInclude Include="Framework3\GUI\CheckBox.h" />
+    <ClInclude Include="Framework3\GUI\Dialog.h" />
+    <ClInclude Include="Framework3\GUI\DropDownList.h" />
+    <ClInclude Include="Framework3\GUI\Label.h" />
+    <ClInclude Include="Framework3\GUI\Slider.h" />
+    <ClInclude Include="Framework3\GUI\Widget.h" />
+    <ClInclude Include="Framework3\Imaging\Image.h" />
+    <ClInclude Include="Framework3\Math\Noise.h" />
+    <ClInclude Include="Framework3\Math\Vector.h" />
+    <ClInclude Include="Framework3\Platform.h" />
+    <ClInclude Include="Framework3\Renderer.h" />
+    <ClInclude Include="Framework3\Util\BSP.h" />
+    <ClInclude Include="Framework3\Util\Model.h" />
+    <ClInclude Include="Framework3\Util\String.h" />
+    <ClInclude Include="Framework3\Util\TexturePacker.h" />
+    <ClInclude Include="Framework3\Util\Tokenizer.h" />
+    <ClInclude Include="App\App.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\Framework3\Windows\Resources.rc" />
+    <ResourceCompile Include="Framework3\Windows\Resources.rc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\Ambient.shd" />
