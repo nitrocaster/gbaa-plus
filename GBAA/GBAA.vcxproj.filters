@@ -178,19 +178,19 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Ambient.shd">
+    <None Include="..\Shaders\Ambient.shd">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="FillBuffers.shd">
+    <None Include="..\Shaders\FillBuffers.shd">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="GBAA.shd">
+    <None Include="..\Shaders\GBAA.shd">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Lighting.shd">
+    <None Include="..\Shaders\Lighting.shd">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Skybox.shd">
+    <None Include="..\Shaders\Skybox.shd">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

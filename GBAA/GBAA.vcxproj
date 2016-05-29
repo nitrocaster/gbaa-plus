@@ -42,8 +42,8 @@
     <_ProjectFileVersion>14.0.25123.0</_ProjectFileVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)\</OutDir>
-    <IntDir>$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\bin\</OutDir>
+    <IntDir>$(SolutionDir)..\intermediate\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules />
@@ -51,8 +51,8 @@
     <TargetName>$(ProjectName)_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)\</OutDir>
-    <IntDir>$(Configuration)\</IntDir>
+    <OutDir>$(SolutionDir)..\bin\</OutDir>
+    <IntDir>$(SolutionDir)..\intermediate\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules />
@@ -163,11 +163,11 @@
     <ResourceCompile Include="..\Framework3\Windows\Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Ambient.shd" />
-    <None Include="FillBuffers.shd" />
-    <None Include="GBAA.shd" />
-    <None Include="Lighting.shd" />
-    <None Include="Skybox.shd" />
+    <None Include="..\Shaders\Ambient.shd" />
+    <None Include="..\Shaders\FillBuffers.shd" />
+    <None Include="..\Shaders\GBAA.shd" />
+    <None Include="..\Shaders\Lighting.shd" />
+    <None Include="..\Shaders\Skybox.shd" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

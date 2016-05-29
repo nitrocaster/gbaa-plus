@@ -158,12 +158,12 @@ void App::exitAPI()
 bool App::load()
 {
 	// Shaders
-	if ((m_FillBuffers[0] = renderer->addShader("FillBuffers.shd"                        )) == SHADER_NONE) return false;
-	if ((m_FillBuffers[1] = renderer->addShader("FillBuffers.shd", "#define ALPHA_TEST\n")) == SHADER_NONE) return false;
-	if ((m_SkyBox    = renderer->addShader("SkyBox.shd"  )) == SHADER_NONE) return false;
-	if ((m_Ambient   = renderer->addShader("Ambient.shd" )) == SHADER_NONE) return false;
-	if ((m_Lighting  = renderer->addShader("Lighting.shd")) == SHADER_NONE) return false;
-	if ((m_AntiAlias = renderer->addShader("GBAA.shd"    )) == SHADER_NONE) return false;
+	if ((m_FillBuffers[0] = renderer->addShader("../Shaders/FillBuffers.shd"                        )) == SHADER_NONE) return false;
+	if ((m_FillBuffers[1] = renderer->addShader("../Shaders/FillBuffers.shd", "#define ALPHA_TEST\n")) == SHADER_NONE) return false;
+	if ((m_SkyBox    = renderer->addShader("../Shaders/SkyBox.shd"  )) == SHADER_NONE) return false;
+	if ((m_Ambient   = renderer->addShader("../Shaders/Ambient.shd" )) == SHADER_NONE) return false;
+	if ((m_Lighting  = renderer->addShader("../Shaders/Lighting.shd")) == SHADER_NONE) return false;
+	if ((m_AntiAlias = renderer->addShader("../Shaders/GBAA.shd"    )) == SHADER_NONE) return false;
 
 	// Samplerstates
 	if ((m_BaseFilter = renderer->addSamplerState(TRILINEAR_ANISO, WRAP, WRAP, WRAP)) == SS_NONE) return false;
