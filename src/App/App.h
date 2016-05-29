@@ -55,7 +55,7 @@ public:
 
 protected:
 	ShaderID m_FillBuffers[2], m_SkyBox, m_Ambient, m_Lighting, m_AntiAlias;
-
+    ShaderID m_Quad, m_ZoomBorder;
 	TextureID m_BaseTex[6], m_BumpTex[6], m_SkyBoxTex;
 	TextureID m_BaseRT, m_NormalRT, m_DepthRT, m_GeometryRT, m_ResultRT;
 

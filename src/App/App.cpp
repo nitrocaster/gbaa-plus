@@ -165,6 +165,8 @@ bool App::load()
 	if ((m_Ambient   = renderer->addShader("../Shaders/Ambient.shd" )) == SHADER_NONE) return false;
 	if ((m_Lighting  = renderer->addShader("../Shaders/Lighting.shd")) == SHADER_NONE) return false;
 	if ((m_AntiAlias = renderer->addShader("../Shaders/GBAA.shd"    )) == SHADER_NONE) return false;
+    if ((m_ZoomBorder = renderer->addShader("../Shaders/ZoomBorder.shd")) == SHADER_NONE) return false;
+    if ((m_Quad = renderer->addShader("../Shaders/Quad.shd")) == SHADER_NONE) return false;
 
 	// Samplerstates
 	if ((m_BaseFilter = renderer->addSamplerState(TRILINEAR_ANISO, WRAP, WRAP, WRAP)) == SS_NONE) return false;
