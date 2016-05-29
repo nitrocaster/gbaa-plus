@@ -26,6 +26,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{aff6afbb-8312-417a-bc5a-abc09ac0d572}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App">
+      <UniqueIdentifier>{95badbf8-42b6-433e-8e98-468bca62af8c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Framework3\BaseApp.cpp">
@@ -98,7 +101,7 @@
       <Filter>Framework3\Windows</Filter>
     </ClCompile>
     <ClCompile Include="App.cpp">
-      <Filter>Framework3</Filter>
+      <Filter>App</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -169,7 +172,7 @@
       <Filter>Framework3\Util</Filter>
     </ClInclude>
     <ClInclude Include="App.h">
-      <Filter>Framework3</Filter>
+      <Filter>App</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
