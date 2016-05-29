@@ -60,6 +60,19 @@ bool App::onKey(const uint key, const bool pressed)
 	return false;
 }
 
+bool App::onMouseButton(int x, int y, MouseButton button, bool pressed)
+{
+    if (D3D10App::onMouseButton(x, y, button, pressed))
+        return true;
+    if (button == MOUSE_RIGHT && pressed)
+    {
+        m_ZoomOffset.x = float(x) / getWidth();
+        m_ZoomOffset.y = float(y) / getHeight();
+        return true;
+    }
+    return false;
+}
+
 void App::onSize(const int w, const int h)
 {
 	D3D10App::onSize(w, h);
@@ -269,6 +282,7 @@ bool App::load()
     {
         return false;
     }
+    m_ZoomOffset = float2(0.5f, 0.5f);
 	return true;
 }
 
@@ -457,7 +471,7 @@ void App::drawFrame()
 void App::drawZoomWindow(TextureID sourceRT)
 {
     float4x4 worldViewProj = identity4(); // origin = window center
-    float2 zoomOffset = float2(0.5, 0.5);
+    
     // render zoom window
     renderer->reset();
     renderer->setDepthState(noDepthTest);
@@ -465,7 +479,7 @@ void App::drawZoomWindow(TextureID sourceRT)
     renderer->setBlendState(m_NoBlend);
     renderer->setShader(m_Quad);
     renderer->setShaderConstant4x4f("WorldViewProj", worldViewProj);
-    renderer->setShaderConstant2f("UVOffset", zoomOffset - quadZoom/2);
+    renderer->setShaderConstant2f("UVOffset", m_ZoomOffset - quadZoom/2);
     renderer->setSamplerState("PointSampler", m_PointClamp);
     renderer->setTexture("BackBuffer", sourceRT);
     renderer->setVertexFormat(m_QuadVF);
@@ -495,7 +509,7 @@ void App::drawZoomWindow(TextureID sourceRT)
     renderer->setBlendState(m_NoBlend);
     renderer->setShader(m_ZoomBorder);
     renderer->setShaderConstant4x4f("WorldViewProj", worldViewProj);
-    renderer->setShaderConstant2f("UVOffset", zoomOffset * 2.0f - 1.0f);
+    renderer->setShaderConstant2f("UVOffset", m_ZoomOffset * 2.0f - 1.0f);
     renderer->setVertexFormat(m_QuadVF);
     renderer->setVertexBuffer(0, m_ZoomVB);
     renderer->setIndexBuffer(m_ZoomIB);

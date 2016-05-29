@@ -40,7 +40,8 @@ public:
 	void resetCamera();
 
 	bool onKey(const uint key, const bool pressed);
-	void onSize(const int w, const int h);
+    bool onMouseButton(int x, int y, MouseButton button, bool pressed);
+    void onSize(const int w, const int h);
 
 	bool init();
 	void exit();
@@ -78,4 +79,5 @@ protected:
     VertexBufferID m_QuadVB, m_ZoomVB;
     VertexFormatID m_QuadVF;
     const float quadZoom = 0.05f;
+    float2 m_ZoomOffset;
 };
