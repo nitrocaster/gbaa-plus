@@ -187,13 +187,13 @@
     <None Include="..\Shaders\FillBuffers.shd">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\Shaders\GBAA.shd">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\Shaders\Lighting.shd">
       <Filter>Shaders</Filter>
     </None>
     <None Include="..\Shaders\Skybox.shd">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\Shaders\GBAA.shd">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

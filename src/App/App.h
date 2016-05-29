@@ -70,5 +70,6 @@ protected:
 	BSP m_BSP;
 
 	CheckBox *m_UseGBAA;
+    CheckBox *m_TweakGPAA;
 	CheckBox *m_RotateSkyBox;
 };

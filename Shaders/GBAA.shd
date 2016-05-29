@@ -27,6 +27,7 @@ SamplerState Linear;
 SamplerState Point;
 
 float2 PixelSize;
+int Tweak;
 
 float4 main(PsIn In) : SV_Target
 {

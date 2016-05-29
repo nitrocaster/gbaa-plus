@@ -132,7 +132,8 @@ bool App::init()
 	// Init GUI components
 	int tab = configDialog->addTab("GBAA");
 	configDialog->addWidget(tab, m_UseGBAA = new CheckBox(0, 0, 150, 36, "Use GBAA", true));
-	configDialog->addWidget(tab, m_RotateSkyBox = new CheckBox(0, 40, 200, 36, "Rotate SkyBox", true));
+    configDialog->addWidget(tab, m_TweakGPAA = new CheckBox(0, 40, 250, 36, "Use GBAA tweak", true));
+    configDialog->addWidget(tab, m_RotateSkyBox = new CheckBox(0, 80, 200, 36, "Rotate SkyBox", true));
 
 	return true;
 }
@@ -385,6 +386,7 @@ void App::drawFrame()
 		renderer->setShader(m_AntiAlias);
 		renderer->setRasterizerState(cullNone);
 		renderer->setShaderConstant2f("PixelSize", float2(1.0f / width, 1.0f / height));
+        renderer->setShaderConstant1i("Tweak", m_TweakGPAA->isChecked() ? 1 : 0);
 		renderer->setTexture("BackBuffer", m_ResultRT);
 		renderer->setTexture("GeometryBuffer", m_GeometryRT);
 		renderer->setSamplerState("Linear", linearClamp);
