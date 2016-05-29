@@ -450,7 +450,7 @@ void App::drawFrame()
 
 		renderer->drawArrays(PRIM_TRIANGLES, 0, 3);
 	}
-
+    d3d10_renderer->copyTexture(m_ResultRT, FB_COLOR);
     drawZoomWindow(m_ResultRT); // pass m_GeometryRT to visualize gbuffer
 }
 
