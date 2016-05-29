@@ -1,0 +1,34 @@
+struct VsIn
+{
+	float3 Position : Position;
+    float2 TexCoord : TexCoord;
+};
+
+struct PsIn
+{
+	float4 Position : SV_Position;
+	float2 TexCoord : TexCoord;
+};
+
+[Vertex shader]
+
+float4x4 WorldViewProj;
+float2 UVOffset;
+
+PsIn main(VsIn In)
+{
+	PsIn Out;
+    In.Position.x += UVOffset.x;
+    In.Position.y -= UVOffset.y;
+	Out.Position = mul(float4(In.Position.xyz, 1), WorldViewProj);
+    Out.TexCoord = In.TexCoord;
+	return Out;
+}
+
+[Fragment shader]
+
+float4 main(PsIn In) : SV_Target
+{
+	float4 color = float4(1, 0.75, 0, 1);
+	return color;
+}

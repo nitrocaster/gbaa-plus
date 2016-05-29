@@ -199,5 +199,8 @@
     <None Include="..\Shaders\Quad.shd">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="..\Shaders\ZoomBorder.shd">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
