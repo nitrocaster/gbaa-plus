@@ -52,6 +52,7 @@ public:
 	void unload();
 
 	void drawFrame();
+    void drawZoomWindow(TextureID sourceRT);
 
 protected:
 	ShaderID m_FillBuffers[2], m_SkyBox, m_Ambient, m_Lighting, m_AntiAlias;
@@ -72,4 +73,9 @@ protected:
 	CheckBox *m_UseGBAA;
     CheckBox *m_TweakGPAA;
 	CheckBox *m_RotateSkyBox;
+
+    IndexBufferID m_QuadIB, m_ZoomIB;
+    VertexBufferID m_QuadVB, m_ZoomVB;
+    VertexFormatID m_QuadVF;
+    const float quadZoom = 0.05f;
 };

@@ -217,6 +217,58 @@ bool App::load()
 	if (!m_Map->makeDrawable(renderer, true, m_FillBuffers[0])) return false;
 	if (!m_Sphere->makeDrawable(renderer, true, m_Lighting)) return false;
 
+    // Create index/vertex buffers for zoom window
+    struct QuadVertex
+    {
+        float3 Position;
+        float2 TexCoord;
+    };
+    // quadZoom = 0.05f
+    float2 texCoord[] = 
+    {
+         {0.0f, 0.0f},
+         {0.0f, quadZoom},
+         {quadZoom, quadZoom},
+         {quadZoom, 0.0f}
+    };
+    QuadVertex zoomVerts[] = // zero-centered quad
+    {
+        {{-quadZoom, -quadZoom, 0.0f}, texCoord[0]},
+        {{-quadZoom, +quadZoom, 0.0f}, texCoord[1]},
+        {{+quadZoom, +quadZoom, 0.0f}, texCoord[2]},
+        {{+quadZoom, -quadZoom, 0.0f}, texCoord[3]}
+    };
+    const float xPos = +0.5f;
+    const float yPos = -0.5f;
+    const float xSize = 0.5f;
+    const float ySize = 0.5f;
+    QuadVertex quadVerts[] =
+    {
+        {{xPos, yPos,                   0.0f}, texCoord[0]},
+        {{xPos, yPos - ySize,           0.0f}, texCoord[1]},
+        {{xPos + xSize, yPos - ySize,   0.0f}, texCoord[2]},
+        {{xPos + xSize, yPos,           0.0f}, texCoord[3]}
+    };
+    uint16 quadIndices[] = {0, 1, 3, 3, 1, 2};
+    if ((m_QuadIB = renderer->addIndexBuffer(elementsOf(quadIndices), sizeof(uint16),
+        STATIC, quadIndices)) == IB_NONE)
+    {
+        return false;
+    }
+    if ((m_QuadVB = renderer->addVertexBuffer(sizeof(quadVerts), STATIC, quadVerts)) == VB_NONE) return false;
+    FormatDesc quadFormat[] =
+    {
+        {0, TYPE_VERTEX, FORMAT_FLOAT, 3},
+        {0, TYPE_TEXCOORD, FORMAT_FLOAT, 2}
+    };
+    if ((m_QuadVF = renderer->addVertexFormat(quadFormat, elementsOf(quadFormat), m_Quad)) == VF_NONE) return false;
+    if ((m_ZoomVB = renderer->addVertexBuffer(sizeof(zoomVerts), STATIC, zoomVerts)) == VB_NONE) return false;
+    uint16 zoomIndices[] = {0, 1, 2, 3, 0};
+    if ((m_ZoomIB = renderer->addIndexBuffer(elementsOf(zoomIndices), sizeof(uint16),
+        STATIC, zoomIndices)) == IB_NONE)
+    {
+        return false;
+    }
 	return true;
 }
 
@@ -398,4 +450,55 @@ void App::drawFrame()
 
 		renderer->drawArrays(PRIM_TRIANGLES, 0, 3);
 	}
+
+    drawZoomWindow(m_ResultRT); // pass m_GeometryRT to visualize gbuffer
+}
+
+void App::drawZoomWindow(TextureID sourceRT)
+{
+    float4x4 worldViewProj = identity4(); // origin = window center
+    float2 zoomOffset = float2(0.5, 0.5);
+    // render zoom window
+    renderer->reset();
+    renderer->setDepthState(noDepthTest);
+    renderer->setRasterizerState(cullNone);
+    renderer->setBlendState(m_NoBlend);
+    renderer->setShader(m_Quad);
+    renderer->setShaderConstant4x4f("WorldViewProj", worldViewProj);
+    renderer->setShaderConstant2f("UVOffset", zoomOffset - quadZoom/2);
+    renderer->setSamplerState("PointSampler", m_PointClamp);
+    renderer->setTexture("BackBuffer", sourceRT);
+    renderer->setVertexFormat(m_QuadVF);
+    renderer->setVertexBuffer(0, m_QuadVB);
+    renderer->setIndexBuffer(m_QuadIB);
+    renderer->apply();
+    renderer->drawElements(PRIM_TRIANGLES, 0, 6, 0, 4);
+
+    // border for zoom window
+    renderer->reset();
+    renderer->setDepthState(noDepthTest);
+    renderer->setRasterizerState(cullNone);
+    renderer->setBlendState(m_NoBlend);
+    renderer->setShader(m_ZoomBorder);
+    renderer->setShaderConstant4x4f("WorldViewProj", worldViewProj);
+    renderer->setShaderConstant2f("UVOffset", float2(0, 0));
+    renderer->setVertexFormat(m_QuadVF);
+    renderer->setVertexBuffer(0, m_QuadVB);
+    renderer->setIndexBuffer(m_ZoomIB);
+    renderer->apply();
+    renderer->drawElements(PRIM_LINE_STRIP, 0, 5, 0, 4);
+
+    // border for zoom window origin
+    renderer->reset();
+    renderer->setDepthState(noDepthTest);
+    renderer->setRasterizerState(cullNone);
+    renderer->setBlendState(m_NoBlend);
+    renderer->setShader(m_ZoomBorder);
+    renderer->setShaderConstant4x4f("WorldViewProj", worldViewProj);
+    renderer->setShaderConstant2f("UVOffset", zoomOffset * 2.0f - 1.0f);
+    renderer->setVertexFormat(m_QuadVF);
+    renderer->setVertexBuffer(0, m_ZoomVB);
+    renderer->setIndexBuffer(m_ZoomIB);
+    renderer->apply();
+    renderer->drawElements(PRIM_LINE_STRIP, 0, 5, 0, 4);
 }
