@@ -45,6 +45,12 @@ void App::resetCamera()
 	wy = -0.655f;
 }
 
+void App::updateZoomOffset(int x, int y)
+{
+    m_ZoomOffset.x = float(x) / getWidth();
+    m_ZoomOffset.y = float(y) / getHeight();
+}
+
 bool App::onKey(const uint key, const bool pressed)
 {
 	if (D3D10App::onKey(key, pressed)) return true;
@@ -62,15 +68,22 @@ bool App::onKey(const uint key, const bool pressed)
 
 bool App::onMouseButton(int x, int y, MouseButton button, bool pressed)
 {
-    if (D3D10App::onMouseButton(x, y, button, pressed))
-        return true;
-    if (button == MOUSE_RIGHT && pressed)
+    bool result = D3D10App::onMouseButton(x, y, button, pressed);
+    if (!mouseCaptured && button == MOUSE_RIGHT)
     {
-        m_ZoomOffset.x = float(x) / getWidth();
-        m_ZoomOffset.y = float(y) / getHeight();
+        m_ZoomTracking = pressed;
+        if (pressed)
+            updateZoomOffset(x, y);
         return true;
     }
-    return false;
+    return result;
+}
+
+bool App::onMouseMove(int x, int y, int dx, int dy)
+{
+    if (!mouseCaptured && m_ZoomTracking)
+        updateZoomOffset(x, y);
+    return D3D10App::onMouseMove(x, y, dx, dy);
 }
 
 void App::onSize(const int w, const int h)
