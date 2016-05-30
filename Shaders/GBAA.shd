@@ -29,8 +29,34 @@ SamplerState Point;
 float2 PixelSize;
 int Tweak;
 
+bool check_opposite_neighbor(float2 tex_coord, float2 offset)
+{
+    // 1] select major offset
+    float2 off;
+    bool x_major = abs(offset.x) < abs(offset.y);
+    if (x_major)
+        off = float2(sign(offset.x), 0);
+    else
+        off = float2(0, sign(offset.y));
+    // 2] select neighbor's offset
+    float2 opp_offset = GeometryBuffer.Sample(Point, tex_coord + off*PixelSize);
+    // 3] make sure it is valid
+    bool apply_offset = true;
+    if (min(abs(opp_offset.x), abs(opp_offset.y)) < 0.5f)
+    {
+        // 4] make sure it points towards current sample
+        // if so - don't apply texture coordinate offset
+        if (x_major)
+            apply_offset = !(sign(offset.x)!=sign(opp_offset.x) && abs(offset.x-opp_offset.x) < 1.0f);
+        else
+            apply_offset = !(sign(offset.y)!=sign(opp_offset.y) && abs(offset.y-opp_offset.y) < 1.0f);
+    }
+    return apply_offset;
+}
+
 float4 main(PsIn In) : SV_Target
 {
+    bool apply_offset = true;
 	float2 offset = GeometryBuffer.Sample(Point, In.TexCoord);
 
 	// Check geometry buffer for an edge cutting through the pixel.
@@ -57,11 +83,16 @@ float4 main(PsIn In) : SV_Target
 		if (abs(offset_y0 - 0.75f) < 0.25f) offset = float2(0.5f, offset_y0 - 1.0f); // Up    y-offset [ 0.5 ..  1.0] cuts this pixel
 		if (abs(offset_y1 + 0.75f) < 0.25f) offset = float2(0.5f, offset_y1 + 1.0f); // Down  y-offset [-1.0 .. -0.5] cuts this pixel
 	}
+    else
+    {
+        if (Tweak)
+            apply_offset = check_opposite_neighbor(In.TexCoord, offset);
+    }
 
 	// Convert distance to texture coordinate shift
 	float2 off = (offset >= float2(0, 0))? float2(0.5f, 0.5f) : float2(-0.5f, -0.5f);
 	offset = off - offset;
 
 	// Blend pixel with neighbor pixel using texture filtering and shifting the coordinate appropriately.
-	return BackBuffer.Sample(Linear, In.TexCoord + offset * PixelSize);
+	return BackBuffer.Sample(Linear, In.TexCoord + (apply_offset ? offset * PixelSize : float2(0, 0)));
 }
