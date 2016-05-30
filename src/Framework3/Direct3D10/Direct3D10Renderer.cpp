@@ -957,6 +957,10 @@ void Direct3D10Renderer::copyTexture(TextureID dst, TextureID src)
     else
         srcRes = textures[src].texture;
     device->CopyResource(dstRes, srcRes);
+    if (dst == FB_COLOR || dst == FB_DEPTH)
+        dstRes->Release();
+    if (src == FB_COLOR || src == FB_DEPTH)
+        srcRes->Release();
 }
 
 void Direct3D10Renderer::removeTexture(const TextureID texture){
