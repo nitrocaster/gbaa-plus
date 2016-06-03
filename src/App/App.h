@@ -74,6 +74,7 @@ protected:
 
 	CheckBox *m_UseGBAA;
     CheckBox *m_TweakGPAA;
+    CheckBox *m_ShowEdges;
 	CheckBox *m_RotateSkyBox;
 
     IndexBufferID m_QuadIB, m_ZoomIB;

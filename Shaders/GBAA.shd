@@ -28,6 +28,7 @@ SamplerState Point;
 
 float2 PixelSize;
 int Tweak;
+int ShowEdges;
 
 bool check_opposite_neighbor(float2 tex_coord, float2 offset)
 {
@@ -58,7 +59,7 @@ float4 main(PsIn In) : SV_Target
 {
     bool apply_offset = true;
 	float2 offset = GeometryBuffer.Sample(Point, In.TexCoord);
-
+    bool edge_found = false;
 	// Check geometry buffer for an edge cutting through the pixel.
 	[flatten]
 	if (min(abs(offset.x), abs(offset.y)) >= 0.5f)
@@ -78,13 +79,30 @@ float4 main(PsIn In) : SV_Target
 		float offset_y1 = GeometryBuffer.Sample(Point, In.TexCoord, int2( 0,  1)).y;
 
 		// Check range of neighbor pixels' distance and use if edge cuts this pixel.
-		if (abs(offset_x0 - 0.75f) < 0.25f) offset = float2(offset_x0 - 1.0f, 0.5f); // Left  x-offset [ 0.5 ..  1.0] cuts this pixel
-		if (abs(offset_x1 + 0.75f) < 0.25f) offset = float2(offset_x1 + 1.0f, 0.5f); // Right x-offset [-1.0 .. -0.5] cuts this pixel
-		if (abs(offset_y0 - 0.75f) < 0.25f) offset = float2(0.5f, offset_y0 - 1.0f); // Up    y-offset [ 0.5 ..  1.0] cuts this pixel
-		if (abs(offset_y1 + 0.75f) < 0.25f) offset = float2(0.5f, offset_y1 + 1.0f); // Down  y-offset [-1.0 .. -0.5] cuts this pixel
+		if (abs(offset_x0 - 0.75f) < 0.25f)
+        {
+            edge_found = true;
+            offset = float2(offset_x0 - 1.0f, 0.5f); // Left  x-offset [ 0.5 ..  1.0] cuts this pixel
+        }
+		if (abs(offset_x1 + 0.75f) < 0.25f)
+        {
+            edge_found = true;
+            offset = float2(offset_x1 + 1.0f, 0.5f); // Right x-offset [-1.0 .. -0.5] cuts this pixel
+        }
+		if (abs(offset_y0 - 0.75f) < 0.25f)
+        {
+            edge_found = true;
+            offset = float2(0.5f, offset_y0 - 1.0f); // Up    y-offset [ 0.5 ..  1.0] cuts this pixel
+        }
+		if (abs(offset_y1 + 0.75f) < 0.25f)
+        {
+            edge_found = true;
+            offset = float2(0.5f, offset_y1 + 1.0f); // Down  y-offset [-1.0 .. -0.5] cuts this pixel
+        }
 	}
     else
     {
+        edge_found = true;
         if (Tweak)
             apply_offset = check_opposite_neighbor(In.TexCoord, offset);
     }
@@ -94,5 +112,8 @@ float4 main(PsIn In) : SV_Target
 	offset = off - offset;
 
 	// Blend pixel with neighbor pixel using texture filtering and shifting the coordinate appropriately.
-	return BackBuffer.Sample(Linear, In.TexCoord + (apply_offset ? offset * PixelSize : float2(0, 0)));
+    if (ShowEdges && edge_found)
+        return float4(1, 0, 0, 1);
+	else
+        return BackBuffer.Sample(Linear, In.TexCoord + (apply_offset ? offset * PixelSize : float2(0, 0)));
 }
