@@ -40,9 +40,12 @@ void App::moveCamera(const float3 &dir)
 
 void App::resetCamera()
 {
-	camPos = vec3(-853, -101, -965);
-	wx = 0.153f;
-	wy = -0.655f;
+	//camPos = vec3(-853, -101, -965);
+	//wx = 0.153f;
+	//wy = -0.655f;
+    camPos = vec3(-286.495880f, -201.800903f, 988.192078f);
+    wx = 1.48800111f;
+    wy = -0.210998490f;
 }
 
 void App::updateZoomOffset(int x, int y)
