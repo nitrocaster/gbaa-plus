@@ -101,6 +101,7 @@ void App::onSize(const int w, const int h)
 		renderer->resizeRenderTarget(m_DepthRT,    w, h, 1, 1, 1);
 		renderer->resizeRenderTarget(m_ResultRT,   w, h, 1, 1, 1);
 		renderer->resizeRenderTarget(m_GeometryRT, w, h, 1, 1, 1);
+        renderer->resizeRenderTarget(m_InvGeometryRT, w, h, 1, 1, 1);
 	}
 }
 
@@ -208,6 +209,7 @@ bool App::load()
 	if ((m_DepthRT    = renderer->addRenderDepth (width, height, 1,       FORMAT_D16,    1, SS_NONE, SAMPLE_DEPTH)) == TEXTURE_NONE) return false;
 	if ((m_ResultRT   = renderer->addRenderTarget(width, height, 1, 1, 1, FORMAT_RGBA8,  1, SS_NONE, SRGB)) == TEXTURE_NONE) return false;
 	if ((m_GeometryRT = renderer->addRenderTarget(width, height, 1, 1, 1, FORMAT_RG16F,  1, SS_NONE)) == TEXTURE_NONE) return false;
+    if ((m_InvGeometryRT = renderer->addRenderTarget(width, height, 1, 1, 1, FORMAT_R16F,  1, SS_NONE)) == TEXTURE_NONE) return false;
 
 	// Textures
 	if ((m_BaseTex[0] = renderer->addTexture  ("../Textures/floor_wood_4.dds",                      true, m_BaseFilter, SRGB)) == TEXTURE_NONE) return false;
@@ -323,11 +325,12 @@ void App::drawFrame()
 
 	Direct3D10Renderer *d3d10_renderer = (Direct3D10Renderer *) renderer;
 
-	TextureID bufferRTs[] = { m_BaseRT, m_NormalRT, m_GeometryRT };
+	TextureID bufferRTs[] = { m_BaseRT, m_NormalRT, m_GeometryRT, m_InvGeometryRT };
 	renderer->changeRenderTargets(bufferRTs, elementsOf(bufferRTs), m_DepthRT);
 	{
 		// Clear to 0.5f, indicating that there is no edge cutting through this pixel.
 		d3d10_renderer->clearRenderTarget(m_GeometryRT, float4(0.5f, 0.5f, 0.5f, 0.5f));
+        d3d10_renderer->clearRenderTarget(m_InvGeometryRT, float4(0));
 		d3d10_renderer->clearDepthTarget(m_DepthRT, 0.0f);
 
 		/*
@@ -476,6 +479,7 @@ void App::drawFrame()
         renderer->setShaderConstant1i("ShowEdges", m_ShowEdges->isChecked() ? 1 : 0);
 		renderer->setTexture("BackBuffer", m_ResultRT);
 		renderer->setTexture("GeometryBuffer", m_GeometryRT);
+        renderer->setTexture("InvGeometryBuffer", m_InvGeometryRT);
 		renderer->setSamplerState("Linear", linearClamp);
 		renderer->setSamplerState("Point", m_PointClamp);
 		renderer->apply();

@@ -23,6 +23,7 @@ PsIn main(uint VertexID : SV_VertexID)
 
 Texture2D BackBuffer;
 Texture2D <float2> GeometryBuffer;
+Texture2D <float> InvGeometryBuffer;
 SamplerState Linear;
 SamplerState Point;
 
@@ -30,36 +31,42 @@ float2 PixelSize;
 int Tweak;
 int ShowEdges;
 
-bool check_opposite_neighbor(float2 tex_coord, float2 offset)
+void check_opposite_neighbor(float2 tex_coord, inout float2 offset)
 {
-    // 1] select major offset
+    // Select major offset
     float2 off;
     bool x_major = abs(offset.x) < abs(offset.y);
     if (x_major)
         off = float2(sign(offset.x), 0);
     else
         off = float2(0, sign(offset.y));
-    // 2] select neighbor's offset
+    // Select neighbor's offset
     float2 opp_offset = GeometryBuffer.Sample(Point, tex_coord + off*PixelSize);
-    // 3] make sure it is valid
+    // Make sure it is valid
     bool apply_offset = true;
     if (min(abs(opp_offset.x), abs(opp_offset.y)) < 0.5f)
     {
-        // 4] make sure it points towards current sample
+        // Make sure it points towards current sample
         // if so - don't apply texture coordinate offset
         if (x_major)
-            apply_offset = !(sign(offset.x)!=sign(opp_offset.x) && abs(offset.x-opp_offset.x) < 1.0f);
+        {
+            if (sign(offset.x)!=sign(opp_offset.x) && abs(opp_offset.x) < 0.5f)
+                offset = 0.5f;
+        }
         else
-            apply_offset = !(sign(offset.y)!=sign(opp_offset.y) && abs(offset.y-opp_offset.y) < 1.0f);
+        {
+            if (sign(offset.y)!=sign(opp_offset.y) && abs(opp_offset.y) < 0.5f)
+                offset = 0.5f;
+        }
     }
-    return apply_offset;
 }
 
 float4 main(PsIn In) : SV_Target
 {
-    bool apply_offset = true;
 	float2 offset = GeometryBuffer.Sample(Point, In.TexCoord);
     bool edge_found = false;
+    bool triple_coverage = false;
+    float4 result;
 	// Check geometry buffer for an edge cutting through the pixel.
 	[flatten]
 	if (min(abs(offset.x), abs(offset.y)) >= 0.5f)
@@ -104,16 +111,50 @@ float4 main(PsIn In) : SV_Target
     {
         edge_found = true;
         if (Tweak)
-            apply_offset = check_opposite_neighbor(In.TexCoord, offset);
+        {
+            float inv_offset = InvGeometryBuffer.Sample(Point, In.TexCoord);
+            if (inv_offset != 0.0f)
+            {
+                triple_coverage = true;
+                
+                // Sample two neighbors
+                float maj_offset;
+                float2 off = 0;
+                if (abs(offset.x) < abs(offset.y))
+                {
+                    off.x = -sign(inv_offset);
+                    maj_offset = offset.x;
+                }
+                else
+                {
+                    off.y = -sign(inv_offset);
+                    maj_offset = offset.y;
+                }                
+                float4 n1 = BackBuffer.Sample(Point, In.TexCoord + off*PixelSize);
+                float4 n2 = BackBuffer.Sample(Point, In.TexCoord - off*PixelSize);
+                
+                // Calculate coverage for this sample (b) and two neighbors (a, c)
+                float alpha = 0.5f-abs(maj_offset); // a (n1)
+                float gamma = 0.5f-abs(inv_offset); // c (n2)
+                float beta = 1-alpha-gamma; // b (this)
+
+                // Blend final color
+                result = alpha*n1 + beta*BackBuffer.Sample(Point, In.TexCoord) + gamma*n2;
+            }
+            else
+                check_opposite_neighbor(In.TexCoord, offset);
+        }
     }
-
-	// Convert distance to texture coordinate shift
-	float2 off = (offset >= float2(0, 0))? float2(0.5f, 0.5f) : float2(-0.5f, -0.5f);
-	offset = off - offset;
-
-	// Blend pixel with neighbor pixel using texture filtering and shifting the coordinate appropriately.
     if (ShowEdges && edge_found)
-        return float4(1, 0, 0, 1);
-	else
-        return BackBuffer.Sample(Linear, In.TexCoord + (apply_offset ? offset * PixelSize : float2(0, 0)));
+        result = float4(1, 0, 0, 1);
+    else if (!triple_coverage)
+	{
+        // Convert distance to texture coordinate shift
+        float2 off = (offset >= float2(0, 0))? float2(0.5f, 0.5f) : float2(-0.5f, -0.5f);
+        offset = off - offset;
+
+        // Blend pixel with neighbor pixel using texture filtering and shifting the coordinate appropriately.
+        result = BackBuffer.Sample(Linear, In.TexCoord + offset * PixelSize);
+    }
+    return result;
 }
